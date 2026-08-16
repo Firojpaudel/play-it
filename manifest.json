@@ -1,0 +1,38 @@
+{
+  "name": "AuraWave - Offline Music & YouTube Downloader",
+  "short_name": "AuraWave",
+  "description": "High-Quality YouTube & Playlist Downloader with 100% Offline Music Player for iPhone and Web.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090a0f",
+  "theme_color": "#0f111a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "entertainment", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Search & Download",
+      "url": "./index.html#search",
+      "description": "Search YouTube for music and playlists"
+    },
+    {
+      "name": "Offline Library",
+      "url": "./index.html#library",
+      "description": "Access your downloaded songs offline"
+    }
+  ]
+}

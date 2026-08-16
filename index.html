@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>SpotiWave - Spotify Music Player & Downloader</title>
+
+  <!-- iOS PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SpotiWave" />
+  <meta name="theme-color" content="#121212" />
+  <link rel="apple-touch-icon" href="icons/icon-512.svg" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/player.css" />
+  <link rel="stylesheet" href="css/downloader.css" />
+</head>
+<body>
+  <!-- Hidden YouTube Player Engine -->
+  <div id="hidden-yt-player-container">
+    <div id="hidden-yt-player"></div>
+  </div>
+
+  <div id="app-layout">
+    <div id="ambient-glow"></div>
+
+    <!-- ================= LEFT SIDEBAR (DESKTOP) ================= -->
+    <aside class="sidebar">
+      <div class="sidebar-logo" onclick="window.ui.switchTab('home')">
+        <img src="icons/icon-192.svg" alt="SpotiWave" />
+        <span class="sidebar-logo-text">SpotiWave</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="sidebar-nav-item active" data-tab="home" onclick="window.ui.switchTab('home')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 3.247a1 1 0 0 0-1 0L4 7.577V20h5v-6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6h5V7.577l-7.5-4.33z"/></svg>
+          Home
+        </button>
+        <button class="sidebar-nav-item" data-tab="search" onclick="window.ui.switchTab('search')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search
+        </button>
+        <button class="sidebar-nav-item" data-tab="library" onclick="window.ui.switchTab('library')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 22a1 1 0 0 1-1-1V3a1 1 0 0 1 2 0v18a1 1 0 0 1-1 1zM15.5 2.134A1 1 0 0 0 14 3v18a1 1 0 0 0 1.5.866l6-3.464A1 1 0 0 0 22 17.536V4.464a1 1 0 0 0-.5-.866l-6-1.464zM9 4a1 1 0 0 0-1 1v14a1 1 0 0 0 2 0V5a1 1 0 0 0-1-1z"/></svg>
+          Your Library
+        </button>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-library-box">
+        <span class="sidebar-box-title">Offline Music Safe</span>
+        <span class="sidebar-box-desc">Download YouTube songs & playlists in 320kbps audio for 100% offline playback on your iPhone.</span>
+        <button class="badge-btn" onclick="window.ui.switchTab('search')">
+          + Find Music
+        </button>
+      </div>
+
+      <button class="sidebar-nav-item" data-tab="settings" onclick="window.ui.switchTab('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Storage & Settings
+      </button>
+    </aside>
+
+    <!-- ================= MAIN CENTER WRAPPER ================= -->
+    <main class="main-wrapper">
+      <header class="main-header">
+        <div class="nav-history-buttons">
+          <button class="nav-circle-btn" onclick="window.history.back()" title="Go Back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="nav-circle-btn" onclick="window.history.forward()" title="Go Forward">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+        <div class="header-search-bar">
+          <span class="search-icon-inside">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+          <input id="header-search-input" class="header-search-input" type="text" placeholder="What do you want to play? (Search YouTube or paste URL)" autocomplete="off" />
+        </div>
+
+        <div class="header-right-actions">
+          <button class="badge-btn" onclick="window.ui.openLyrics()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            Lyrics
+          </button>
+          <button class="badge-btn" onclick="window.ui.switchTab('search')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </button>
+        </div>
+      </header>
+
+      <div class="content-viewport">
+        <div id="active-download-queue" class="download-queue-panel" style="display: none;"></div>
+
+        <!-- ================= PAGE: HOME ================= -->
+        <section id="view-home" class="view-page active">
+          <div class="shelf-header">
+            <h1 class="shelf-title" id="greeting-text">Good afternoon</h1>
+          </div>
+
+          <div id="quick-picks-container" class="quick-picks-grid"></div>
+
+          <div class="shelf-header">
+            <h2 class="shelf-title">Today's Biggest Hits</h2>
+            <span class="shelf-see-all" onclick="window.ui.triggerCategorySearch('Top Hits 2024')">Show all</span>
+          </div>
+          <div id="shelf-hits" class="cards-shelf-grid"></div>
+
+          <div class="shelf-header">
+            <h2 class="shelf-title">Focus & Lo-Fi Chill</h2>
+            <span class="shelf-see-all" onclick="window.ui.triggerCategorySearch('lofi beats')">Show all</span>
+          </div>
+          <div id="shelf-lofi" class="cards-shelf-grid"></div>
+        </section>
+
+        <!-- ================= PAGE: SEARCH ================= -->
+        <section id="view-search" class="view-page">
+          <div class="shelf-header">
+            <h1 class="shelf-title">Search YouTube</h1>
+          </div>
+
+          <div id="search-results-container"></div>
+
+          <div id="browse-categories-section">
+            <h2 class="shelf-title" style="font-size: 18px; margin-bottom: 16px;">Browse all</h2>
+            <div id="browse-categories" class="browse-categories-grid"></div>
+          </div>
+        </section>
+
+        <!-- ================= PAGE: LIBRARY ================= -->
+        <section id="view-library" class="view-page">
+          <div class="shelf-header">
+            <div>
+              <h1 class="shelf-title">Your Offline Library</h1>
+              <p style="font-size: 13px; color: var(--text-subdued); margin-top: 4px;">Songs saved permanently on your device for offline playback</p>
+            </div>
+            <button class="badge-btn" onclick="window.ui.switchTab('search')">+ Download Music</button>
+          </div>
+
+          <div id="library-empty-state" style="display: none; text-align: center; padding: 60px 20px;">
+            <div style="font-size: 48px; margin-bottom: 12px;">🎵</div>
+            <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Your library is empty</h3>
+            <p style="font-size: 14px; color: var(--text-subdued); margin-bottom: 20px;">Search YouTube or paste any playlist link to download music for offline listening.</p>
+            <button class="badge-btn" onclick="window.ui.switchTab('search')">Search YouTube</button>
+          </div>
+
+          <div id="library-track-list"></div>
+        </section>
+
+        <!-- ================= PAGE: SETTINGS ================= -->
+        <section id="view-settings" class="view-page">
+          <div class="shelf-header">
+            <h1 class="shelf-title">Settings & Storage</h1>
+          </div>
+
+          <div id="storage-stats-container"></div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 20px;">
+            <div style="background: var(--bg-elevated); border-radius: var(--radius-md); padding: 20px;">
+              <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 6px;">📱 Install on iPhone / iPad</h3>
+              <p style="font-size: 13px; color: var(--text-subdued); line-height: 1.6;">
+                1. Open this website in <strong>Safari</strong> on your iPhone.<br/>
+                2. Tap the <strong>Share</strong> button at the bottom.<br/>
+                3. Tap <strong>"Add to Home Screen"</strong>.<br/>
+                4. Tap <strong>Add</strong>. It installs as a full-screen app with offline audio & lock screen controls!
+              </p>
+            </div>
+
+            <div style="background: var(--bg-elevated); border-radius: var(--radius-md); padding: 20px;">
+              <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 6px; color: #ff5555;">Clear Local Storage</h3>
+              <p style="font-size: 13px; color: var(--text-subdued); margin-bottom: 16px;">Removes all downloaded songs and resets the database.</p>
+              <button class="table-download-btn" style="background: rgba(255, 77, 77, 0.15); color: #ff5555;" onclick="if(confirm('Clear all offline songs?')) { window.auraStorage.clearAllData().then(() => location.reload()); }">
+                Clear Offline Music
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ================= BOTTOM SPOTIFY PLAYER BAR (DESKTOP) ================= -->
+    <footer class="player-bar">
+      <div class="player-left">
+        <img id="player-thumb" class="player-thumb" src="icons/icon-512.svg" alt="" onclick="window.ui.openFullPlayer()" />
+        <div class="player-track-meta">
+          <span id="player-title" class="player-title" onclick="window.ui.openFullPlayer()">No Track Playing</span>
+          <span id="player-artist" class="player-artist">Select a song to start</span>
+        </div>
+        <button id="player-like-btn" class="player-like-btn" title="Save to Your Library">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+
+      <div class="player-center">
+        <div class="player-buttons-row">
+          <button id="shuffle-btn-bar" class="btn-ctrl" title="Enable Shuffle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+          </button>
+          <button id="prev-btn-bar" class="btn-ctrl" title="Previous Track">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2.5"/></svg>
+          </button>
+          <button id="main-play-btn-bar" class="btn-play-pause-main" title="Play">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button id="next-btn-bar" class="btn-ctrl" title="Next Track">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2.5"/></svg>
+          </button>
+          <button id="repeat-btn-bar" class="btn-ctrl" title="Enable Repeat">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </button>
+        </div>
+
+        <div class="playback-bar">
+          <span id="player-time-current" class="time-label">0:00</span>
+          <input id="player-slider-bar" class="progress-slider" type="range" min="0" max="100" value="0" step="0.1" />
+          <span id="player-time-duration" class="time-label">0:00</span>
+        </div>
+      </div>
+
+      <div class="player-right">
+        <button class="btn-ctrl" title="Lyrics" onclick="window.ui.openLyrics()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <button id="save-current-offline-btn" class="btn-ctrl" title="Download for Offline (IndexedDB)" onclick="window.ui.downloadCurrentPlayingTrack()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <div class="volume-bar-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <input id="volume-slider" class="progress-slider" type="range" min="0" max="100" value="100" />
+        </div>
+        <button class="btn-ctrl" title="Open Fullscreen Player" onclick="window.ui.openFullPlayer()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+      </div>
+    </footer>
+
+    <!-- ================= MOBILE BOTTOM NAVIGATION (SPOTIFY MOBILE STYLE) ================= -->
+    <nav class="mobile-nav-bar">
+      <button class="mobile-nav-item active" data-tab="home" onclick="window.ui.switchTab('home')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 3.247a1 1 0 0 0-1 0L4 7.577V20h5v-6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6h5V7.577l-7.5-4.33z"/></svg>
+        <span>Home</span>
+      </button>
+      <button class="mobile-nav-item" data-tab="search" onclick="window.ui.switchTab('search')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Search</span>
+      </button>
+      <button class="mobile-nav-item" data-tab="library" onclick="window.ui.switchTab('library')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 22a1 1 0 0 1-1-1V3a1 1 0 0 1 2 0v18a1 1 0 0 1-1 1zM15.5 2.134A1 1 0 0 0 14 3v18a1 1 0 0 0 1.5.866l6-3.464A1 1 0 0 0 22 17.536V4.464a1 1 0 0 0-.5-.866l-6-1.464zM9 4a1 1 0 0 0-1 1v14a1 1 0 0 0 2 0V5a1 1 0 0 0-1-1z"/></svg>
+        <span>Library</span>
+      </button>
+      <button class="mobile-nav-item" data-tab="settings" onclick="window.ui.switchTab('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <!-- Mobile Sticky Mini Player -->
+    <div id="mini-player" class="mini-player" onclick="window.ui.openFullPlayer()">
+      <div class="mini-player-progress-bar">
+        <div id="mini-progress-fill" class="mini-player-progress-fill"></div>
+      </div>
+      <div class="mini-track-info">
+        <img id="mini-thumbnail" class="mini-thumbnail" src="icons/icon-192.svg" alt="" />
+        <div class="mini-meta">
+          <span id="mini-title" class="mini-title">No Track Playing</span>
+          <span id="mini-artist" class="mini-artist">Tap to start</span>
+        </div>
+      </div>
+      <div class="mini-actions">
+        <button id="mini-play-btn" class="mini-play-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= FULLSCREEN NOW PLAYING VIEW ================= -->
+    <div id="full-player-modal" class="full-player-modal">
+      <div class="full-player-backdrop"></div>
+      <div class="full-player-content">
+        <div class="full-player-header">
+          <button class="icon-btn" title="Minimize" onclick="window.ui.closeFullPlayer()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="full-player-header-title">
+            <span class="full-player-header-subtitle">NOW PLAYING</span>
+            <span class="full-player-header-name">SpotiWave Master Audio</span>
+          </div>
+          <button class="icon-btn" onclick="window.ui.openLyrics()" title="Lyrics">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+        </div>
+
+        <div class="full-artwork-wrapper">
+          <img id="full-artwork" class="full-artwork-img" src="icons/icon-512.svg" alt="" />
+        </div>
+
+        <div class="full-track-meta-row">
+          <div class="full-meta-text">
+            <h2 id="full-title" class="full-title">No Track Playing</h2>
+            <p id="full-artist" class="full-artist">SpotiWave</p>
+          </div>
+          <button id="full-fav-btn" class="fav-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+
+        <div class="scrub-container">
+          <input id="scrub-slider" class="scrub-slider" type="range" min="0" max="100" value="0" step="0.1" />
+          <div class="scrub-time-row">
+            <span id="current-time-text">0:00</span>
+            <span id="total-duration-text">0:00</span>
+          </div>
+        </div>
+
+        <div class="full-controls-row">
+          <button id="shuffle-btn" class="control-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+          <button id="prev-track-btn" class="control-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/></svg></button>
+          <button id="full-play-btn" class="big-play-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+          <button id="next-track-btn" class="control-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg></button>
+          <button id="repeat-btn" class="control-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+        </div>
+
+        <div class="full-footer-row">
+          <div class="bitrate-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+            320 kbps Master Audio
+          </div>
+          <span style="font-size: 11px; color: var(--text-subdued);">SpotiWave Engine</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SYNCHRONIZED LYRICS DRAWER ================= -->
+    <div id="lyrics-modal" class="lyrics-modal">
+      <div class="lyrics-header">
+        <span class="lyrics-header-title">Live Lyrics</span>
+        
+        <!-- Smart 1-Tap Sync Tools -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="table-download-btn" style="background: rgba(30, 215, 96, 0.15); color: var(--sp-green); border: 1px solid rgba(30, 215, 96, 0.3); padding: 5px 12px; font-size: 11.5px;" onclick="window.ui.syncLyricsAtCurrentVocal()" title="Aligns lyrics to the exact moment singing starts">
+            ⚡ Sync Vocals Here
+          </button>
+          <div style="display: inline-flex; align-items: center; background: rgba(255,255,255,0.08); border-radius: 500px; padding: 2px 6px;">
+            <button class="btn-ctrl" style="width: 22px; height: 22px; font-size: 11px; font-weight: 800;" onclick="window.ui.adjustLyricsOffset(-0.5)" title="Nudge 0.5s Earlier">-</button>
+            <span id="lyrics-offset-display" style="font-size: 11px; font-weight: 700; color: #fff; min-width: 32px; text-align: center;">0.0s</span>
+            <button class="btn-ctrl" style="width: 22px; height: 22px; font-size: 11px; font-weight: 800;" onclick="window.ui.adjustLyricsOffset(0.5)" title="Nudge 0.5s Later">+</button>
+          </div>
+        </div>
+
+        <button class="lyrics-close-btn" onclick="window.ui.closeLyrics()" title="Close Lyrics">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="lyrics-scroll-container" class="lyrics-scroll-container"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/youtube.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
