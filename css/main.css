@@ -136,17 +136,19 @@ html, body {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Hidden YouTube Audio IFrame */
+/* Hidden YouTube Audio IFrame Engine */
 #hidden-yt-player-container {
-  position: absolute;
-  top: -9999px;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  z-index: -999;
   pointer-events: none;
+  opacity: 0.001;
   overflow: hidden;
 }
+
 
 /* ================= DESKTOP SIDEBAR ================= */
 .sidebar {

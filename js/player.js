@@ -66,8 +66,8 @@ class AudioPlayer {
   createYtPlayer() {
     if (this.ytPlayer) return;
     this.ytPlayer = new YT.Player('hidden-yt-player', {
-      height: '1',
-      width: '1',
+      height: '200',
+      width: '200',
       videoId: '',
       playerVars: {
         playsinline: 1,
@@ -76,7 +76,8 @@ class AudioPlayer {
         fs: 0,
         modestbranding: 1,
         rel: 0,
-        origin: window.location.origin
+        autoplay: 1,
+        enablejsapi: 1
       },
       events: {
         onReady: () => {
@@ -88,6 +89,7 @@ class AudioPlayer {
       }
     });
   }
+
 
   handleYtStateChange(state) {
     // YT.PlayerState.PLAYING === 1
@@ -204,20 +206,31 @@ class AudioPlayer {
       }
     }
 
-    // 2. Play the EXACT real YouTube audio via Hidden YouTube Engine
+    // 2. Play audio
+    // For saved Blobs: uses direct Blob URL in HTML5 Audio
+    // For online tracks: plays via YouTube Engine with background audio readiness
     this.playbackMode = 'yt';
     if (this.ytPlayer && typeof this.ytPlayer.loadVideoById === 'function') {
-      this.ytPlayer.loadVideoById(track.id);
-      this.ytPlayer.playVideo();
+      try {
+        this.ytPlayer.loadVideoById(track.id);
+        this.ytPlayer.playVideo();
+      } catch (e) {
+        console.warn('YT player loadVideoById error:', e);
+      }
     } else {
       setTimeout(() => {
         if (this.ytPlayer && typeof this.ytPlayer.loadVideoById === 'function') {
-          this.ytPlayer.loadVideoById(track.id);
-          this.ytPlayer.playVideo();
+          try {
+            this.ytPlayer.loadVideoById(track.id);
+            this.ytPlayer.playVideo();
+          } catch (e) {
+            console.warn('YT player delayed play error:', e);
+          }
         }
       }, 400);
     }
   }
+
 
   stopAll() {
     this.stopYtProgressTracker();
@@ -330,9 +343,25 @@ class AudioPlayer {
     navigator.mediaSession.setActionHandler('pause', () => this.togglePlay());
     navigator.mediaSession.setActionHandler('previoustrack', () => this.prevTrack());
     navigator.mediaSession.setActionHandler('nexttrack', () => this.nextTrack());
-    navigator.mediaSession.setActionHandler('seekto', (d) => {
-      if (d.seekTime !== undefined) this.seek(d.seekTime);
-    });
+    try {
+      navigator.mediaSession.setActionHandler('seekto', (d) => {
+        if (d.seekTime !== undefined) this.seek(d.seekTime);
+      });
+      navigator.mediaSession.setActionHandler('seekbackward', (d) => {
+        const skip = d.seekOffset || 10;
+        this.seek(Math.max(0, (this.getCurrentTime() - skip)));
+      });
+      navigator.mediaSession.setActionHandler('seekforward', (d) => {
+        const skip = d.seekOffset || 10;
+        this.seek(Math.min(this.getDuration(), (this.getCurrentTime() + skip)));
+      });
+    } catch (e) {}
+  }
+
+  getCurrentTime() {
+    if (this.playbackMode === 'blob') return this.blobAudio.currentTime || 0;
+    if (this.ytPlayer && typeof this.ytPlayer.getCurrentTime === 'function') return this.ytPlayer.getCurrentTime() || 0;
+    return 0;
   }
 
   updateMediaSessionMetadata(track) {
@@ -353,7 +382,23 @@ class AudioPlayer {
   updateMediaSessionState(state) {
     if (!('mediaSession' in navigator)) return;
     navigator.mediaSession.playbackState = state;
+    
+    // Update position state for lockscreen timeline
+    if ('setPositionState' in navigator.mediaSession) {
+      try {
+        const dur = this.getDuration();
+        const cur = this.getCurrentTime();
+        if (dur > 0 && !isNaN(cur) && !isNaN(dur) && cur <= dur) {
+          navigator.mediaSession.setPositionState({
+            duration: dur,
+            playbackRate: 1.0,
+            position: Math.max(0, cur)
+          });
+        }
+      } catch (e) {}
+    }
   }
 }
 
 window.audioPlayer = new AudioPlayer();
+

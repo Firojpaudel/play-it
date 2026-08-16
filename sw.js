@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aurawave-v1';
+const CACHE_NAME = 'play-it-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -11,7 +11,6 @@ const ASSETS_TO_CACHE = [
   './js/youtube.js',
   './js/player.js',
   './js/ui.js',
-  './js/visualizer.js',
   './icons/icon-192.svg',
   './icons/icon-512.svg'
 ];
@@ -39,16 +38,28 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET and cross-origin stream downloads from cache
+  // Only handle GET requests
   if (event.request.method !== 'GET') return;
   
   const url = new URL(event.request.url);
 
-  // Stale-while-revalidate strategy for local assets
+  // App shell & static local assets (Cache-first with network fallback)
   if (url.origin === location.origin) {
+    // Avoid caching large cross-origin blobs/streams
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
-        const fetchPromise = fetch(event.request).then((networkResponse) => {
+        if (cachedResponse) {
+          // Fetch fresh copy in background to update cache (Stale-While-Revalidate)
+          fetch(event.request).then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              const clone = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+            }
+          }).catch(() => {});
+          return cachedResponse;
+        }
+
+        return fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
@@ -56,10 +67,14 @@ self.addEventListener('fetch', (event) => {
             });
           }
           return networkResponse;
-        }).catch(() => cachedResponse);
-
-        return cachedResponse || fetchPromise;
+        }).catch(() => {
+          // If offline and request is HTML navigation, return cached index.html
+          if (event.request.headers.get('accept')?.includes('text/html')) {
+            return caches.match('./index.html') || caches.match('./');
+          }
+        });
       })
     );
   }
 });
+
