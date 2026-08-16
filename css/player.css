@@ -178,10 +178,10 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-width: 480px;
+  max-width: 440px;
   width: 100%;
   margin: 0 auto;
-  padding: calc(var(--safe-top) + 20px) 24px calc(var(--safe-bottom) + 24px) 24px;
+  padding: calc(env(safe-area-inset-top, 40px) + 8px) 24px calc(env(safe-area-inset-bottom, 20px) + 12px) 24px;
   justify-content: space-between;
 }
 

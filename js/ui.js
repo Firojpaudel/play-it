@@ -344,11 +344,12 @@ class UIController {
 
   async updatePlayerDownloadBtnState(isDownloading, isSaved = false) {
     const btn = document.getElementById('save-current-offline-btn');
-    if (!btn) return;
+    const fullBtn = document.getElementById('full-download-btn');
 
     if (isDownloading) {
-      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 0.8s linear infinite; color: var(--sp-green);"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/></svg>`;
-      btn.title = 'Downloading audio...';
+      const spinSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 0.8s linear infinite; color: var(--sp-green);"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/></svg>`;
+      if (btn) { btn.innerHTML = spinSvg; btn.title = 'Downloading audio...'; }
+      if (fullBtn) { fullBtn.innerHTML = spinSvg; fullBtn.title = 'Downloading...'; }
       return;
     }
 
@@ -361,11 +362,13 @@ class UIController {
     }
 
     if (saved) {
-      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sp-green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-      btn.title = 'Saved to Offline Library (IndexedDB)';
+      const checkSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sp-green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+      if (btn) { btn.innerHTML = checkSvg; btn.title = 'Saved to Offline Library'; }
+      if (fullBtn) { fullBtn.innerHTML = checkSvg; fullBtn.title = 'Saved Offline'; }
     } else {
-      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
-      btn.title = 'Download for Offline (IndexedDB)';
+      const dlSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+      if (btn) { btn.innerHTML = dlSvg; btn.title = 'Download for Offline'; }
+      if (fullBtn) { fullBtn.innerHTML = dlSvg; fullBtn.title = 'Download Song'; }
     }
   }
 
