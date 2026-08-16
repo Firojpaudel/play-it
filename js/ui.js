@@ -152,30 +152,37 @@ class UIController {
   // --- SEARCH ENGINE BINDINGS ---
 
   bindSearchEvents() {
-    const searchInput = document.getElementById('header-search-input');
-    if (!searchInput) return;
+    const searchInputs = [
+      document.getElementById('header-search-input'),
+      document.getElementById('mobile-search-input')
+    ].filter(Boolean);
 
-    searchInput.addEventListener('input', (e) => {
-      const val = e.target.value.trim();
-      if (this.activeTab !== 'search') {
-        this.switchTab('search');
-      }
+    searchInputs.forEach(input => {
+      input.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (this.activeTab !== 'search') {
+          this.switchTab('search');
+        }
 
-      clearTimeout(this.searchDebounceTimer);
-      if (val.length > 0) {
-        this.searchDebounceTimer = setTimeout(() => {
-          this.executeSearch(val);
-        }, 350);
-      } else {
-        this.clearSearchResults();
-      }
-    });
+        // Sync inputs
+        searchInputs.forEach(other => { if (other !== input) other.value = val; });
 
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
         clearTimeout(this.searchDebounceTimer);
-        this.executeSearch(searchInput.value.trim());
-      }
+        if (val.length > 0) {
+          this.searchDebounceTimer = setTimeout(() => {
+            this.executeSearch(val);
+          }, 350);
+        } else {
+          this.clearSearchResults();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          clearTimeout(this.searchDebounceTimer);
+          this.executeSearch(input.value.trim());
+        }
+      });
     });
   }
 

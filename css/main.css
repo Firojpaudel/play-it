@@ -913,7 +913,7 @@ html, body {
   color: var(--sp-green);
 }
 
-/* ================= RESPONSIVE MEDIA QUERIES ================= */
+/* ================= RESPONSIVE MEDIA QUERIES (MOBILE / IPHONE) ================= */
 @media (max-width: 768px) {
   #app-layout {
     display: flex;
@@ -948,21 +948,13 @@ html, body {
     overflow: hidden;
   }
 
+  /* On mobile Spotify, the top search & action buttons are in the Search tab, not crowded in the top notch */
   .main-header {
-    padding: 0 14px;
-    height: 56px;
-  }
-
-  .header-search-bar {
-    margin: 0 8px;
-  }
-
-  .nav-history-buttons {
-    display: none;
+    display: none !important;
   }
 
   .content-viewport {
-    padding: 16px 14px calc(var(--mobile-nav-height) + var(--mini-player-height) + var(--safe-bottom) + 20px) 14px;
+    padding: calc(env(safe-area-inset-top, 44px) + 16px) 16px calc(var(--mobile-nav-height) + var(--mini-player-height) + var(--safe-bottom) + 20px) 16px;
     width: 100%;
   }
 
