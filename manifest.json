@@ -1,7 +1,7 @@
 {
-  "name": "AuraWave - Offline Music & YouTube Downloader",
-  "short_name": "AuraWave",
-  "description": "High-Quality YouTube & Playlist Downloader with 100% Offline Music Player for iPhone and Web.",
+  "name": "play-it - offline music player",
+  "short_name": "play-it",
+  "description": "free offline music player & youtube downloader for iphone and web.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

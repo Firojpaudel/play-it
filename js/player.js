@@ -341,8 +341,8 @@ class AudioPlayer {
 
     navigator.mediaSession.metadata = new MediaMetadata({
       title: track.title || 'Untitled Track',
-      artist: track.artist || 'SpotiWave Master Audio',
-      album: 'SpotiWave Library',
+      artist: track.artist || 'play-it audio',
+      album: 'play-it Library',
       artwork: [
         { src: artworkSrc, sizes: '512x512', type: 'image/png' },
         { src: artworkSrc, sizes: '192x192', type: 'image/png' }
